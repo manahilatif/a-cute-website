@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { nanoid } from "nanoid";
 import { supabase } from "@/lib/supabase";
-import { resend } from "@/lib/resend";
+import { sendEmail } from "@/lib/resend";
 import { getOccasion, getTemplate } from "@/lib/templates";
 import { ReceiverEmail } from "@/emails/ReceiverEmail";
 import { SenderConfirmation } from "@/emails/SenderConfirmation";
+import { render } from "@react-email/components";
 
 export async function POST(req: NextRequest) {
   try {
@@ -74,44 +75,51 @@ export async function POST(req: NextRequest) {
     const cardUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/card/${cardId}`;
 
     // Send receiver email
-    const { error: receiverError } = await resend.emails.send({
-      from: "A Cute Website <onboarding@resend.dev>",
-      to: recipientEmail,
-      subject: `You've received an ${occasion.label} card 🌙`,
-      react: ReceiverEmail({
+    const { render } = await import("@react-email/render");
+
+    const receiverHtml = await render(
+      ReceiverEmail({
         cardUrl,
         occasionLabel: occasion.label,
         templateImage: template.image,
         fields,
         expiryDate: expiryFormatted,
         senderEmail,
-      }),
-    });
+      })
+    );
 
-    if (receiverError) {
-      console.error("Resend receiver error:", receiverError);
-      return NextResponse.json(
-        { error: "Failed to send email. Please try again." },
-        { status: 500 }
-      );
-    }
+    try {
+      await sendEmail({
+      to: recipientEmail,
+      subject: `You've received an ${occasion.label} card 🌙`,
+      htmlContent: receiverHtml,
+    });
+  } catch (err) {
+    console.error("Brevo receiver error:", err);
+    return NextResponse.json(
+      { error: "Failed to send email. Please try again." },
+      { status: 500 }
+    );
+  }
 
     // Send sender confirmation email
-    const { error: senderError } = await resend.emails.send({
-      from: "A Cute Website <onboarding@resend.dev>",
-      to: senderEmail,
-      subject: `Your ${occasion.label} card has been sent ♡`,
-      react: SenderConfirmation({
+    const senderHtml = await render(
+      SenderConfirmation({
         cardUrl,
         occasionLabel: occasion.label,
         recipientEmail,
         expiryDate: expiryFormatted,
-      }),
-    });
+      })
+    );
 
-    if (senderError) {
-      console.error("Resend sender error:", senderError);
-      // Don't fail the whole request if confirmation fails
+    try {
+      await sendEmail({
+        to: senderEmail,
+        subject: `Your ${occasion.label} card has been sent ♡`,
+        htmlContent: senderHtml,
+      });
+    } catch (err) {
+      console.error("Brevo sender error:", err);
     }
 
     return NextResponse.json({ success: true, cardId });
