@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "A Cute Website — Send a little love",
+  title: "A Cute Website",
   description: "Send beautiful personalised cards to the people you love, for every occasion.",
   openGraph: {
     title: "A Cute Website — Send a little love",
