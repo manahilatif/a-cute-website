@@ -9,6 +9,10 @@ export const metadata: Metadata = {
     description: "Send beautiful personalised cards to the people you love.",
     type: "website",
   },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  },
 };
 
 export default function RootLayout({
