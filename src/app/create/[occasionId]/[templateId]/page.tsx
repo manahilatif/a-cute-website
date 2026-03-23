@@ -60,7 +60,7 @@ export default function CreatePage() {
       return;
     }
 
-    const emptyRequired = template.fields.find(
+    const emptyRequired = template?.fields.find(
       (f) => !fields[f.id] || fields[f.id].trim() === ""
     );
     if (emptyRequired) {
