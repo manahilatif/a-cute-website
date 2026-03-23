@@ -27,7 +27,7 @@ export const occasions: Occasion[] = [
   {
     id: "eid",
     label: "Eid Mubarak",
-    subtitle: "Send a little love this Eid 🌙",
+    subtitle: "because some feelings deserve more than a text 💌",
     active: true,
     templates: [
       {

@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "A Cute Website",
   description: "Send beautiful personalised cards to the people you love, for every occasion.",
   openGraph: {
-    title: "A Cute Website — Send a little love",
+    title: "A Cute Website — Send a little love.",
     description: "Send beautiful personalised cards to the people you love.",
     type: "website",
   },
