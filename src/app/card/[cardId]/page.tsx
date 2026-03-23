@@ -6,18 +6,19 @@ import DownloadButton from "@/components/DownloadButton";
 import type { Metadata } from "next";
 
 interface Props {
-  params: { cardId: string };
+  params: Promise<{ cardId: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { cardId } = await params;
   return {
-    title: "You've received a card ♡ — a cute website",
+    title: "You've received a gift. ♡ — a cute website",
     description: "Someone sent you a little love. Open your card to see your message.",
   };
 }
 
 export default async function CardPage({ params }: Props) {
-  const { cardId } = params;
+  const { cardId } = await params;
 
   // Fetch card from Supabase
   const { data: card, error } = await supabase
